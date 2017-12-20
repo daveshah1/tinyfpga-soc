@@ -1,5 +1,5 @@
 include ../include/generated/variables.mak
-include $(MISOC_DIRECTORY)/software/common.mak
+include $(SOC_DIRECTORY)/software/common.mak
 
 OBJECTS=crt0.o main.o
 

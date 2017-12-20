@@ -5,13 +5,13 @@ import importlib
 import os.path
 import struct
 
-from migen import *
+from litex.gen import *
 # from migen.genlib.io import CRG
-from migen.build.platforms import tinyfpga_b
-from migen.build.generic_platform import *
+from litex.boards.platforms import tinyfpga_b
+from litex.build.generic_platform import *
 
-from misoc.integration.soc_core import *
-from misoc.integration.builder import *
+from litex.soc.integration.soc_core import *
+from litex.soc.integration.builder import *
 
 
 class BaseSoC(SoCCore):
