@@ -18,8 +18,8 @@ class BaseSoC(SoCCore):
     def __init__(self, platform, **kwargs):
         SoCCore.__init__(self, platform,
             clk_freq=int((1/(platform.default_clk_period))*1000000000),
-            integrated_rom_size=0x200,
-            integrated_sram_size=0x1000,
+            integrated_rom_size=0x400,
+            integrated_sram_size=0x2800,
             integrated_main_ram_size=0,
             **kwargs)
         self.submodules.crg = CRG(platform.request(platform.default_clk_name))
@@ -58,8 +58,6 @@ def main():
     parser = argparse.ArgumentParser(description="TinyFPGA MiSoC port")
     builder_args(parser)
     soc_core_args(parser)
-    # parser.add_argument("--with-ethernet", action="store_true",
-    #                    help="enable Ethernet support")
     args = parser.parse_args()
 
     platform = tinyfpga_b.Platform()
@@ -77,8 +75,8 @@ def main():
     lm32_config_paths = list(platform.verilog_include_paths)
     platform.verilog_include_paths.remove(lm32_config_paths[0])
     platform.add_verilog_include_path(".")
-    # Hack to workaround potential bug in yosys where include files aren't
-    # picked up properly?
+    # Hack to workaround bug in yosys on my machine where include files aren't
+    # picked up properly.
     platform.add_verilog_include_path(os.path.join(lm32_config_paths[0], "submodule", "rtl"))
 
     builder = TinyFpgaBuilder(soc, **builder_argdict(args))

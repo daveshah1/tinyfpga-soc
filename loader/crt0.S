@@ -124,7 +124,7 @@ _crt0:
 	bi      .clearBSS
 
 .callMain:
-	bi      .callMain
+	bi      main
 
 .save_all:
 	addi    sp, sp, -56
@@ -161,6 +161,3 @@ _crt0:
 	lw      ba, (sp+52)
 	addi    sp, sp, 56
 	eret
-
-isr:
-    bi isr
