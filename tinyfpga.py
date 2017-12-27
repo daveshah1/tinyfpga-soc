@@ -61,13 +61,7 @@ def main():
     args = parser.parse_args()
 
     platform = tinyfpga_b.Platform()
-    serial = [("serial", 0,
-                    Subsignal("tx", Pins("GPIO:0")),
-                    Subsignal("rx", Pins("GPIO:1")),
-             )]
-    platform.add_extension(serial)
-    # cls = MiniSoC if args.with_ethernet else BaseSoC
-    # soc = cls(platform, integrated_rom_size=0xa000, **soc_core_argdict(args))
+    # platform.add_extension(tinyfpga_b.serial)
     soc = BaseSoC(platform, **soc_core_argdict(args))
 
     # We want a custom lm32_config.v. Since there's no clean way to really
@@ -75,9 +69,6 @@ def main():
     lm32_config_paths = list(platform.verilog_include_paths)
     platform.verilog_include_paths.remove(lm32_config_paths[0])
     platform.add_verilog_include_path(".")
-    # Hack to workaround bug in yosys on my machine where include files aren't
-    # picked up properly.
-    platform.add_verilog_include_path(os.path.join(lm32_config_paths[0], "submodule", "rtl"))
 
     builder = TinyFpgaBuilder(soc, **builder_argdict(args))
     builder.build()
