@@ -23,6 +23,7 @@ class BaseSoC(SoCCore):
         SoCCore.__init__(self, platform,
             clk_freq=int((1/(platform.default_clk_period))*1000000000),
             cpu_reset_address=0x30000 + 136448,
+            # cpu_reset_address=0x30000,
             integrated_rom_size=0,
             integrated_sram_size=0x2800,
             integrated_main_ram_size=0,
@@ -32,6 +33,8 @@ class BaseSoC(SoCCore):
         self.submodules.spiflash = SpiFlashSingle(platform.request("spiflash"))
         self.register_rom(self.spiflash.bus)
 
+        self.comb += [platform.request("trigger").eq(0)]
+
 
 def main():
     parser = argparse.ArgumentParser(description="TinyFPGA MiSoC port")
@@ -39,9 +42,16 @@ def main():
     soc_core_args(parser)
     args = parser.parse_args()
 
+    # Dummy signal for debugging SPI flash usage w/ Logic Analyzer.
+    trigger = [
+        ("trigger", 0, Pins("GPIO:2"))
+    ]
+
     platform = tinyfpga_b.Platform()
+    platform.add_extension(trigger)
     # platform.add_extension(tinyfpga_b.serial)
     soc = BaseSoC(platform, **soc_core_argdict(args))
+    platform.toolchain.build_template[3] = "icepack -s {build_name}.txt {build_name}.bin"
 
     # We want a custom lm32_config.v. Since there's no clean way to really
     # remove include paths, let's go ahead and manually modify it.
