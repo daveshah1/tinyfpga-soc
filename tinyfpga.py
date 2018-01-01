@@ -29,7 +29,12 @@ class BaseSoC(SoCCore):
             integrated_main_ram_size=0,
             **kwargs)
 
-        self.submodules.crg = CRG(platform.request(platform.default_clk_name))
+        # No user-reset signal, but wait a few cycles before accessing
+        # SPI flash.
+        reset_timer = Signal(max=1 << 8, reset=(1 << 8) - 1)
+        self.sync.por += If(reset_timer != 0, reset_timer.eq(reset_timer - 1))
+
+        self.submodules.crg = CRG(platform.request(platform.default_clk_name), reset_timer > 0)
         self.submodules.spiflash = SpiFlashSingle(platform.request("spiflash"))
         self.register_rom(self.spiflash.bus)
 
